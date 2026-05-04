@@ -1,3 +1,4 @@
+# %sql
 CREATE OR REPLACE TABLE banking.gold.risk_customer_summary AS
 
 SELECT
@@ -11,6 +12,7 @@ FROM banking.silver.credit_bureau_reports
 
 GROUP BY risk_grade
 
+# %python
 count = spark.sql("""
 SELECT COUNT(*) AS cnt
 FROM banking.gold.risk_customer_summary

@@ -1,3 +1,4 @@
+# %sql
 CREATE OR REPLACE TABLE banking.gold.daily_bank_kpi AS
 
 WITH txn_daily AS (
@@ -47,6 +48,7 @@ CROSS JOIN customer_metrics cm
 CROSS JOIN account_metrics am
 CROSS JOIN credit_metrics cr
 
+# %python
 count = spark.sql("""
 SELECT COUNT(*) AS cnt
 FROM banking.gold.daily_bank_kpi

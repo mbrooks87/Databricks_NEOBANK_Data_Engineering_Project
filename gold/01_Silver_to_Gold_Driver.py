@@ -1,3 +1,4 @@
+# %python
 import json
 from datetime import datetime
 
@@ -21,7 +22,10 @@ print("Run ID:", run_id)
 print("Table ID:", table_id)
 print("Table Name:", table_name)
 
+# %sql
 create schema if not exists banking.gold;
+
+# %python
 
 entry_exists = spark.sql(f"""
     SELECT 1

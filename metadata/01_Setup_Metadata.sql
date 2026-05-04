@@ -1,3 +1,4 @@
+-- %sql
 drop table if exists banking.metadata.tables;
 drop table if exists banking.metadata.table_parameters;
 drop table if exists banking.metadata.table_watermarks;

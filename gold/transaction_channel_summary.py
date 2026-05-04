@@ -1,3 +1,4 @@
+# %sql
 CREATE OR REPLACE TABLE banking.gold.transaction_channel_summary AS
 
 SELECT
@@ -29,6 +30,7 @@ txn_date,
 pg.gateway_name,
 pg.device_type
 
+# %python
 count = spark.sql("""
 SELECT COUNT(*) AS cnt
 FROM banking.gold.transaction_channel_summary

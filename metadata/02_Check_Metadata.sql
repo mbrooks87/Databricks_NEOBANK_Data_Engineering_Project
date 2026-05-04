@@ -1,3 +1,4 @@
+-- %sql
 select * from banking.metadata.tables
 
 select * from banking.metadata.table_parameters

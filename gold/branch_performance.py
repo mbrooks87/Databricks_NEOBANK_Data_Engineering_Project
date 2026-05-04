@@ -1,3 +1,4 @@
+# %sql
 CREATE OR REPLACE TABLE banking.gold.branch_performance AS
 
 WITH customer_branch AS (
@@ -51,6 +52,7 @@ GROUP BY
 b.branch_code,
 b.branch_name
 
+# %python
 count = spark.sql("""
 SELECT COUNT(*) AS cnt
 FROM banking.gold.branch_performance

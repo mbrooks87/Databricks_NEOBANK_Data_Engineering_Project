@@ -1,3 +1,4 @@
+# %sql
 CREATE OR REPLACE TABLE banking.gold.customer_360 AS
 
 WITH account_agg AS (
@@ -66,6 +67,7 @@ LEFT JOIN banking.silver.branches b
 LEFT JOIN credit_latest cr
     ON c.customer_id = cr.customer_id
 
+# %python
 count = spark.sql("""
 SELECT COUNT(*) AS cnt
 FROM banking.gold.customer_360

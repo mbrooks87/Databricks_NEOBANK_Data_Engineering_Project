@@ -1,3 +1,4 @@
+# %python
 # =====================================================
 # 1️⃣ Widgets
 # =====================================================
@@ -110,7 +111,10 @@ if load_type in ["APPEND", "MERGE"] and watermark_column:
 
 print("Last Watermark:", last_watermark)
 
+# %sql
 create schema if not exists banking.bronze
+
+# %python
 
 # =====================================================
 # 4️⃣ Read Source
