@@ -1,4 +1,3 @@
-# Databricks notebook source
 # ==========================================
 # 1️⃣ Create Widget
 # ==========================================
@@ -20,7 +19,6 @@ if not table_id:
     raise ValueError("table_id not found in table_metadata")
 
 table_id = int(table_id)
-
 
 # ==========================================
 # 2️⃣ Read Table Parameters
@@ -44,7 +42,6 @@ parameters_dict = {
 
 print("Parameters JSON Object:")
 print(parameters_dict)
-
 
 # ==========================================
 # 4️⃣ Set Databricks Task Value

@@ -1,4 +1,3 @@
-# Databricks notebook source
 # ==========================================
 # 1️⃣ Create Widget
 # ==========================================
@@ -10,7 +9,6 @@ print(f"Source System Passed: {source_system}")
 
 if not source_system:
     raise ValueError("source_system widget cannot be empty")
-
 
 # ==========================================
 # 2️⃣ Read Metadata Tables
@@ -25,7 +23,6 @@ filtered_df = (
 )
 
 display(filtered_df)
-
 
 # ==========================================
 # 3️⃣ Convert to List of Dictionaries
@@ -54,7 +51,6 @@ tables_list = [
 
 print("Tables to Process (Full Metadata):")
 print(tables_list)
-
 
 # ==========================================
 # 4️⃣ Set Databricks Task Value

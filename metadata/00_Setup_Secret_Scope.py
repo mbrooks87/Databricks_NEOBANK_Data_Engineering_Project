@@ -1,4 +1,3 @@
-# Databricks notebook source
 # =====================================================
 # 1️⃣ Define Connection Variables (EDIT THESE)
 # =====================================================
@@ -15,8 +14,6 @@ secret_scope_name = "banking-scope"
 # Secret key name (single secret containing full JSON)
 secret_key_name = "sqlserver-connection-json"
 # secret_key_name = "sqlserver-connection-json-dummy"
-
-# COMMAND ----------
 
 # =====================================================
 # 2️⃣ Build JSON Object
@@ -38,9 +35,6 @@ connection_json = json.dumps(connection_config)
 print("Generated JSON Configuration:")
 print(connection_json)
 
-
-# COMMAND ----------
-
 # Python cell in the same workspace notebook
 ctx = dbutils.notebook.entry_point.getDbutils().notebook().getContext()
 
@@ -49,7 +43,6 @@ api_token = ctx.apiToken().getOrElse(None)  # personal access token for this ses
 
 print(api_url)
 print(api_token)  # handle securely, do not log in real code
-
 
 import requests
 import json
@@ -62,10 +55,6 @@ DATABRICKS_TOKEN = api_token  # Replace with your PAT
 
 scope_name = secret_scope_name  # Scope to be created
 backend_type = "DATABRICKS"     # Use "AZURE_KEYVAULT" if integrating with Key Vault
-
-# COMMAND ----------
-
-
 
 # ----------------------------------------
 # API Endpoint
@@ -95,9 +84,6 @@ else:
     print("Failed to create secret scope.")
     print("Status Code:", response.status_code)
     print("Response:", response.text)
-
-
-# COMMAND ----------
 
 import requests
 import json
@@ -137,9 +123,6 @@ else:
     print("Status:", response.status_code)
     print("Response:", response.text)
 
-
-# COMMAND ----------
-
 # =====================================================
 # 5️⃣ Verify Secret Retrieval
 # =====================================================
@@ -159,9 +142,6 @@ try:
 except Exception as e:
     print("Secret verification failed:")
     print(str(e))
-
-
-# COMMAND ----------
 
 import requests
 import json

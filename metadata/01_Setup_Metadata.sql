@@ -1,12 +1,8 @@
--- Databricks notebook source
 drop table if exists banking.metadata.tables;
 drop table if exists banking.metadata.table_parameters;
 drop table if exists banking.metadata.table_watermarks;
 drop table if exists banking.metadata.pipeline_runs
 
--- COMMAND ----------
-
--- DBTITLE 1,Create Tables
 -- =====================================================
 -- CATALOG & SCHEMA
 -- =====================================================
@@ -14,7 +10,6 @@ drop table if exists banking.metadata.pipeline_runs
 CREATE CATALOG IF NOT EXISTS banking;
 
 CREATE SCHEMA IF NOT EXISTS banking.metadata;
-
 
 -- =====================================================
 -- 1️⃣ metadata.tables
@@ -38,7 +33,6 @@ CREATE TABLE IF NOT EXISTS banking.metadata.tables (
 )
 USING DELTA;
 
-
 -- =====================================================
 -- 2️⃣ metadata.table_parameters
 -- Processing configuration (load type, PK, watermark)
@@ -51,7 +45,6 @@ CREATE TABLE IF NOT EXISTS banking.metadata.table_parameters (
     created_at          TIMESTAMP
 )
 USING DELTA;
-
 
 -- =====================================================
 -- 3️⃣ metadata.table_watermarks
@@ -66,7 +59,6 @@ CREATE TABLE IF NOT EXISTS banking.metadata.table_watermarks (
 )
 USING DELTA
 PARTITIONED BY (table_id);
-
 
 -- =====================================================
 -- 4️⃣ metadata.pipeline_runs
@@ -86,26 +78,17 @@ CREATE TABLE IF NOT EXISTS banking.metadata.pipeline_runs (
 USING DELTA
 PARTITIONED BY (table_id);
 
-
-
--- COMMAND ----------
-
--- DBTITLE 1,Create Source Volume
 -- =====================================================
 -- CREATE SOURCE SCHEMA
 -- =====================================================
 
 CREATE SCHEMA IF NOT EXISTS banking.source;
 
-
 -- =====================================================
 -- CREATE VOLUME FOR SOURCE FILES (BLOB LANDING)
 -- =====================================================
 
 CREATE VOLUME IF NOT EXISTS banking.source.volume;
-
-
--- COMMAND ----------
 
 -- =====================================================
 -- INSERT INTO metadata.tables
@@ -133,13 +116,6 @@ INSERT INTO banking.metadata.tables VALUES
 (6, 'payment_gateway_logs', 'blob', NULL, NULL,
  '/Volumes/banking/source/volume/payment_gateway_logs/', 'silver',
  'bronze', 'silver', NULL, TRUE, 6, current_timestamp());
-
--- COMMAND ----------
-
--- DBTITLE 1,Insert metadata
-
-
-
 
 -- =====================================================
 -- INSERT INTO metadata.table_parameters
@@ -176,8 +152,6 @@ INSERT INTO banking.metadata.table_parameters VALUES
 (6, 'primary_key', 'txn_id', current_timestamp()),
 (6, 'watermark_column', 'processed_timestamp', current_timestamp());
 
-
-
 -- =====================================================
 -- OPTIONAL: INITIALIZE WATERMARK TABLE
 -- (Only for INCREMENTAL tables)
@@ -189,9 +163,6 @@ INSERT INTO banking.metadata.table_watermarks VALUES
 (3, '1900-01-01 00:00:00', current_timestamp(), NULL),
 (5, '1900-01-01 00:00:00', current_timestamp(), NULL),
 (6, '1900-01-01 00:00:00', current_timestamp(), NULL);
-
-
--- COMMAND ----------
 
 INSERT INTO banking.metadata.tables
 VALUES (
@@ -209,8 +180,6 @@ VALUES (
     1,
     current_timestamp()
 );
-
--- COMMAND ----------
 
 INSERT INTO banking.metadata.tables
 VALUES
@@ -261,8 +230,6 @@ TRUE,
 4,
 current_timestamp()
 );
-
--- COMMAND ----------
 
 INSERT INTO banking.metadata.tables
 VALUES (

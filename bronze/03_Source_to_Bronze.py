@@ -1,4 +1,3 @@
-# Databricks notebook source
 # =====================================================
 # 1️⃣ Widgets
 # =====================================================
@@ -38,8 +37,6 @@ print("Table Metadata:", table_metadata)
 print("Table Parameters:", table_parameters)
 print(f"Run ID: {run_id}")
 
-# COMMAND ----------
-
 # =====================================================
 # 2️⃣ Extract Variables
 # =====================================================
@@ -59,9 +56,6 @@ bronze_table_fqn = f"banking.{bronze_schema}.{table_name}"
 
 print(f"Target Bronze Table: {bronze_table_fqn}")
 
-# COMMAND ----------
-
-# DBTITLE 1,Metadata Entry
 # =====================================================
 # Make and entry to audit table
 # =====================================================
@@ -98,8 +92,6 @@ else:
         )
     """)
 
-# COMMAND ----------
-
 # =====================================================
 # 3️⃣ Get Last Watermark (For Filtering Only)
 # =====================================================
@@ -118,12 +110,9 @@ if load_type in ["APPEND", "MERGE"] and watermark_column:
 
 print("Last Watermark:", last_watermark)
 
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC create schema if not exists banking.bronze
-
-# COMMAND ----------
+spark.sql("""
+create schema if not exists banking.bronze
+""")
 
 # =====================================================
 # 4️⃣ Read Source

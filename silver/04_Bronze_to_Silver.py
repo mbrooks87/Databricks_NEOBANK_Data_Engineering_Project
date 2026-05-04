@@ -1,4 +1,3 @@
-# Databricks notebook source
 # =====================================================
 # 1️⃣ Imports & Setup
 # =====================================================
@@ -8,14 +7,10 @@ import time
 from pyspark.sql.functions import current_timestamp, col, max as spark_max
 from delta.tables import DeltaTable
 
-
-
-
 status = "SUCCESS"
 error_message = None
 records_read = 0
 records_written = 0
-
 
 # =====================================================
 # 2️⃣ Widgets
@@ -46,7 +41,6 @@ run_id=dbutils.widgets.get("run_id")
 table_metadata = json.loads(dbutils.widgets.get("table_metadata").replace("'", '"'))
 table_parameters = json.loads(dbutils.widgets.get("table_parameters").replace("'", '"'))
 
-
 table_id = int(table_metadata["table_id"])
 table_name = table_metadata["table_name"]
 bronze_schema = table_metadata["bronze_schema"]
@@ -62,8 +56,6 @@ silver_table = f"banking.{silver_schema}.{table_name}"
 print(f"Processing Table: {table_name}")
 print(f"Load Type: {load_type}")
 print(f"Run ID: {run_id}")
-
-# COMMAND ----------
 
 # =====================================================
 # 3️⃣ TRY-CATCH BLOCK FOR AUDIT CONTROL
@@ -97,7 +89,6 @@ try:
     records_read = bronze_df.count()
     print("Records to process:", records_read)
 
-
     # -----------------------------------------
     # Add audit columns
     # -----------------------------------------
@@ -107,7 +98,6 @@ try:
         .withColumn("insert_timestamp", current_timestamp())
         .withColumn("update_timestamp", current_timestamp())
     )
-
 
     # -----------------------------------------
     # Create Silver if not exists
@@ -184,7 +174,6 @@ try:
         else:
             raise ValueError("Unsupported load_type")
 
-
     # -----------------------------------------
     # Update Watermark (APPEND & MERGE)
     # -----------------------------------------
@@ -211,14 +200,12 @@ try:
 
     print("Silver Load Completed Successfully.")
 
-
 except Exception as e:
 
     status = "FAILED"
     error_message = str(e)
     print("Error Occurred:", error_message)
     raise
-
 
 finally:
 

@@ -1,4 +1,3 @@
-# Databricks notebook source
 import json
 from datetime import datetime
 
@@ -22,12 +21,9 @@ print("Run ID:", run_id)
 print("Table ID:", table_id)
 print("Table Name:", table_name)
 
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC create schema if not exists banking.gold;
-
-# COMMAND ----------
+spark.sql("""
+create schema if not exists banking.gold;
+""")
 
 entry_exists = spark.sql(f"""
     SELECT 1
@@ -69,13 +65,9 @@ else:
 
 print("Audit entry created / updated")
 
-# COMMAND ----------
-
 notebook_path = f"gold_transformations/{table_name}"
 
 print("Notebook to execute:", notebook_path)
-
-# COMMAND ----------
 
 status = "SUCCESS"
 error_message = None
@@ -103,8 +95,6 @@ except Exception as e:
     print("Notebook failed")
     print(error_message)
 
-# COMMAND ----------
-
 end_time = datetime.utcnow()
 
 spark.sql(f"""
@@ -119,8 +109,6 @@ spark.sql(f"""
 """)
 
 print("Audit table updated")
-
-# COMMAND ----------
 
 if status == "FAILED":
     raise Exception(error_message)
