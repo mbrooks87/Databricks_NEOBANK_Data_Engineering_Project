@@ -110,9 +110,8 @@ if load_type in ["APPEND", "MERGE"] and watermark_column:
 
 print("Last Watermark:", last_watermark)
 
-spark.sql("""
-create schema if not exists banking.bronze
-""")
+# MAGIC %sql
+# MAGIC create schema if not exists banking.bronze
 
 # =====================================================
 # 4️⃣ Read Source

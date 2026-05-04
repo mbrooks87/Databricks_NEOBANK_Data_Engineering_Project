@@ -21,9 +21,8 @@ print("Run ID:", run_id)
 print("Table ID:", table_id)
 print("Table Name:", table_name)
 
-spark.sql("""
-create schema if not exists banking.gold;
-""")
+# MAGIC %sql
+# MAGIC create schema if not exists banking.gold;
 
 entry_exists = spark.sql(f"""
     SELECT 1
