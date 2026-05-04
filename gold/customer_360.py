@@ -1,71 +1,70 @@
-# MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE banking.gold.customer_360 AS
-# MAGIC
-# MAGIC WITH account_agg AS (
-# MAGIC     SELECT
-# MAGIC         customer_id,
-# MAGIC         COUNT(account_id) AS total_accounts,
-# MAGIC         SUM(balance) AS total_balance
-# MAGIC     FROM banking.silver.accounts
-# MAGIC     GROUP BY customer_id
-# MAGIC ),
-# MAGIC
-# MAGIC txn_agg AS (
-# MAGIC     SELECT
-# MAGIC         a.customer_id,
-# MAGIC         COUNT(t.txn_id) AS total_transactions,
-# MAGIC         SUM(t.amount) AS total_transaction_amount
-# MAGIC     FROM banking.silver.transactions t
-# MAGIC     JOIN banking.silver.accounts a
-# MAGIC         ON t.account_id = a.account_id
-# MAGIC     GROUP BY a.customer_id
-# MAGIC ),
-# MAGIC
-# MAGIC credit_latest AS (
-# MAGIC     SELECT *
-# MAGIC     FROM (
-# MAGIC         SELECT *,
-# MAGIC                ROW_NUMBER() OVER (
-# MAGIC                    PARTITION BY customer_id
-# MAGIC                    ORDER BY bureau_pull_date DESC
-# MAGIC                ) AS rn
-# MAGIC         FROM banking.silver.credit_bureau_reports
-# MAGIC     )
-# MAGIC     WHERE rn = 1
-# MAGIC )
-# MAGIC
-# MAGIC SELECT
-# MAGIC     c.customer_id,
-# MAGIC     CONCAT(c.first_name,' ',c.last_name) AS customer_name,
-# MAGIC     b.branch_name,
-# MAGIC     COALESCE(a.total_accounts,0) AS total_accounts,
-# MAGIC     COALESCE(a.total_balance,0) AS total_balance,
-# MAGIC     COALESCE(t.total_transactions,0) AS total_transactions,
-# MAGIC     COALESCE(t.total_transaction_amount,0) AS total_transaction_amount,
-# MAGIC     cr.credit_score,
-# MAGIC     cr.risk_grade,
-# MAGIC     cr.external_active_loans,
-# MAGIC     cr.external_overdue_amount,
-# MAGIC
-# MAGIC     CASE
-# MAGIC         WHEN a.total_balance >= 500000 THEN 'HIGH_VALUE'
-# MAGIC         WHEN a.total_balance >= 100000 THEN 'MEDIUM_VALUE'
-# MAGIC         ELSE 'LOW_VALUE'
-# MAGIC     END AS customer_segment
-# MAGIC
-# MAGIC FROM banking.silver.customers c
-# MAGIC
-# MAGIC LEFT JOIN account_agg a
-# MAGIC     ON c.customer_id = a.customer_id
-# MAGIC
-# MAGIC LEFT JOIN txn_agg t
-# MAGIC     ON c.customer_id = t.customer_id
-# MAGIC
-# MAGIC LEFT JOIN banking.silver.branches b
-# MAGIC     ON c.branch_code = b.branch_code
-# MAGIC
-# MAGIC LEFT JOIN credit_latest cr
-# MAGIC     ON c.customer_id = cr.customer_id
+CREATE OR REPLACE TABLE banking.gold.customer_360 AS
+
+WITH account_agg AS (
+    SELECT
+        customer_id,
+        COUNT(account_id) AS total_accounts,
+        SUM(balance) AS total_balance
+    FROM banking.silver.accounts
+    GROUP BY customer_id
+),
+
+txn_agg AS (
+    SELECT
+        a.customer_id,
+        COUNT(t.txn_id) AS total_transactions,
+        SUM(t.amount) AS total_transaction_amount
+    FROM banking.silver.transactions t
+    JOIN banking.silver.accounts a
+        ON t.account_id = a.account_id
+    GROUP BY a.customer_id
+),
+
+credit_latest AS (
+    SELECT *
+    FROM (
+        SELECT *,
+               ROW_NUMBER() OVER (
+                   PARTITION BY customer_id
+                   ORDER BY bureau_pull_date DESC
+               ) AS rn
+        FROM banking.silver.credit_bureau_reports
+    )
+    WHERE rn = 1
+)
+
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name,' ',c.last_name) AS customer_name,
+    b.branch_name,
+    COALESCE(a.total_accounts,0) AS total_accounts,
+    COALESCE(a.total_balance,0) AS total_balance,
+    COALESCE(t.total_transactions,0) AS total_transactions,
+    COALESCE(t.total_transaction_amount,0) AS total_transaction_amount,
+    cr.credit_score,
+    cr.risk_grade,
+    cr.external_active_loans,
+    cr.external_overdue_amount,
+
+    CASE
+        WHEN a.total_balance >= 500000 THEN 'HIGH_VALUE'
+        WHEN a.total_balance >= 100000 THEN 'MEDIUM_VALUE'
+        ELSE 'LOW_VALUE'
+    END AS customer_segment
+
+FROM banking.silver.customers c
+
+LEFT JOIN account_agg a
+    ON c.customer_id = a.customer_id
+
+LEFT JOIN txn_agg t
+    ON c.customer_id = t.customer_id
+
+LEFT JOIN banking.silver.branches b
+    ON c.branch_code = b.branch_code
+
+LEFT JOIN credit_latest cr
+    ON c.customer_id = cr.customer_id
 
 count = spark.sql("""
 SELECT COUNT(*) AS cnt

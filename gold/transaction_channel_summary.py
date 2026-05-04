@@ -1,34 +1,33 @@
-# MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE banking.gold.transaction_channel_summary AS
-# MAGIC
-# MAGIC SELECT
-# MAGIC DATE(t.txn_timestamp) AS txn_date,
-# MAGIC pg.gateway_name,
-# MAGIC pg.device_type,
-# MAGIC
-# MAGIC COUNT(*) AS total_transactions,
-# MAGIC
-# MAGIC SUM(
-# MAGIC     CASE WHEN pg.gateway_status = 'SUCCESS'
-# MAGIC     THEN 1 ELSE 0 END
-# MAGIC ) AS successful_transactions,
-# MAGIC
-# MAGIC SUM(
-# MAGIC     CASE WHEN pg.gateway_status = 'FAILED'
-# MAGIC     THEN 1 ELSE 0 END
-# MAGIC ) AS failed_transactions,
-# MAGIC
-# MAGIC AVG(pg.processing_time_ms) AS avg_processing_time_ms
-# MAGIC
-# MAGIC FROM banking.silver.transactions t
-# MAGIC
-# MAGIC JOIN banking.silver.payment_gateway_logs pg
-# MAGIC     ON t.txn_id = pg.txn_id
-# MAGIC
-# MAGIC GROUP BY
-# MAGIC txn_date,
-# MAGIC pg.gateway_name,
-# MAGIC pg.device_type
+CREATE OR REPLACE TABLE banking.gold.transaction_channel_summary AS
+
+SELECT
+DATE(t.txn_timestamp) AS txn_date,
+pg.gateway_name,
+pg.device_type,
+
+COUNT(*) AS total_transactions,
+
+SUM(
+    CASE WHEN pg.gateway_status = 'SUCCESS'
+    THEN 1 ELSE 0 END
+) AS successful_transactions,
+
+SUM(
+    CASE WHEN pg.gateway_status = 'FAILED'
+    THEN 1 ELSE 0 END
+) AS failed_transactions,
+
+AVG(pg.processing_time_ms) AS avg_processing_time_ms
+
+FROM banking.silver.transactions t
+
+JOIN banking.silver.payment_gateway_logs pg
+    ON t.txn_id = pg.txn_id
+
+GROUP BY
+txn_date,
+pg.gateway_name,
+pg.device_type
 
 count = spark.sql("""
 SELECT COUNT(*) AS cnt

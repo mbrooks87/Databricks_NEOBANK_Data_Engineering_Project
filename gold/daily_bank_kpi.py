@@ -1,52 +1,51 @@
-# MAGIC %sql
-# MAGIC CREATE OR REPLACE TABLE banking.gold.daily_bank_kpi AS
-# MAGIC
-# MAGIC WITH txn_daily AS (
-# MAGIC     SELECT
-# MAGIC         DATE(txn_timestamp) AS txn_date,
-# MAGIC         COUNT(txn_id) AS total_transactions,
-# MAGIC         SUM(amount) AS total_transaction_amount
-# MAGIC     FROM banking.silver.transactions
-# MAGIC     GROUP BY DATE(txn_timestamp)
-# MAGIC ),
-# MAGIC
-# MAGIC customer_metrics AS (
-# MAGIC     SELECT
-# MAGIC         COUNT(DISTINCT customer_id) AS total_customers
-# MAGIC     FROM banking.silver.customers
-# MAGIC ),
-# MAGIC
-# MAGIC account_metrics AS (
-# MAGIC     SELECT
-# MAGIC         COUNT(account_id) AS total_accounts,
-# MAGIC         SUM(balance) AS total_balance
-# MAGIC     FROM banking.silver.accounts
-# MAGIC ),
-# MAGIC
-# MAGIC credit_metrics AS (
-# MAGIC     SELECT
-# MAGIC         AVG(credit_score) AS avg_credit_score,
-# MAGIC         SUM(
-# MAGIC             CASE WHEN risk_grade='HIGH'
-# MAGIC             THEN 1 ELSE 0 END
-# MAGIC         ) AS high_risk_customers
-# MAGIC     FROM banking.silver.credit_bureau_reports
-# MAGIC )
-# MAGIC
-# MAGIC SELECT
-# MAGIC t.txn_date,
-# MAGIC cm.total_customers,
-# MAGIC am.total_accounts,
-# MAGIC am.total_balance,
-# MAGIC t.total_transactions,
-# MAGIC t.total_transaction_amount,
-# MAGIC cr.avg_credit_score,
-# MAGIC cr.high_risk_customers
-# MAGIC
-# MAGIC FROM txn_daily t
-# MAGIC CROSS JOIN customer_metrics cm
-# MAGIC CROSS JOIN account_metrics am
-# MAGIC CROSS JOIN credit_metrics cr
+CREATE OR REPLACE TABLE banking.gold.daily_bank_kpi AS
+
+WITH txn_daily AS (
+    SELECT
+        DATE(txn_timestamp) AS txn_date,
+        COUNT(txn_id) AS total_transactions,
+        SUM(amount) AS total_transaction_amount
+    FROM banking.silver.transactions
+    GROUP BY DATE(txn_timestamp)
+),
+
+customer_metrics AS (
+    SELECT
+        COUNT(DISTINCT customer_id) AS total_customers
+    FROM banking.silver.customers
+),
+
+account_metrics AS (
+    SELECT
+        COUNT(account_id) AS total_accounts,
+        SUM(balance) AS total_balance
+    FROM banking.silver.accounts
+),
+
+credit_metrics AS (
+    SELECT
+        AVG(credit_score) AS avg_credit_score,
+        SUM(
+            CASE WHEN risk_grade='HIGH'
+            THEN 1 ELSE 0 END
+        ) AS high_risk_customers
+    FROM banking.silver.credit_bureau_reports
+)
+
+SELECT
+t.txn_date,
+cm.total_customers,
+am.total_accounts,
+am.total_balance,
+t.total_transactions,
+t.total_transaction_amount,
+cr.avg_credit_score,
+cr.high_risk_customers
+
+FROM txn_daily t
+CROSS JOIN customer_metrics cm
+CROSS JOIN account_metrics am
+CROSS JOIN credit_metrics cr
 
 count = spark.sql("""
 SELECT COUNT(*) AS cnt
